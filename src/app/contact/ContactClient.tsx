@@ -65,37 +65,6 @@ const ContactClient = () => {
         }));
     };
 
-    const contactMethods = [
-        {
-            icon: Mail,
-            title: 'Email Us',
-            description: 'Send us an email anytime',
-            contact: 'contact@skillpreneurz.com',
-            href: 'mailto:contact@skillpreneurz.com'
-        },
-        {
-            icon: Phone,
-            title: 'Call Us',
-            description: 'Mon-Sat, 9 AM - 6 PM IST',
-            contact: '+91 98765 43210',
-            href: 'tel:+919876543210'
-        },
-        {
-            icon: MessageSquare,
-            title: 'WhatsApp',
-            description: 'Quick responses on WhatsApp',
-            contact: '+91 98765 43210',
-            href: 'https://wa.me/919876543210'
-        },
-        {
-            icon: MapPin,
-            title: 'Visit Us',
-            description: 'Our office location',
-            contact: 'India',
-            href: '#'
-        }
-    ];
-
     const inquiryTypes = [
         { value: 'parent', label: 'Parent Inquiry' },
         { value: 'school', label: 'School Partnership' },
@@ -125,34 +94,6 @@ const ContactClient = () => {
                                     or an organization interested in youth development, we'd love to hear from you.
                                     Our team is ready to answer your questions and help you find the right solution.
                                 </p>
-                            </div>
-                        </div>
-                    </section>
-
-                    {/* Contact Methods */}
-                    <section className="py-16 bg-muted">
-                        <div className="container">
-                            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                                {contactMethods.map((method, index) => (
-                                    <a
-                                        key={index}
-                                        href={method.href}
-                                        className="block"
-                                        target={method.href.startsWith('http') ? '_blank' : undefined}
-                                        rel={method.href.startsWith('http') ? 'noopener noreferrer' : undefined}
-                                    >
-                                        <Card className="h-full border-0 shadow-lg hover:shadow-xl transition-shadow cursor-pointer">
-                                            <CardContent className="p-6 text-center">
-                                                <div className="mx-auto mb-4 p-3 rounded-full bg-accent/10 w-fit">
-                                                    <method.icon className="h-6 w-6 text-accent" />
-                                                </div>
-                                                <h3 className="font-bold text-foreground mb-1">{method.title}</h3>
-                                                <p className="text-sm text-muted-foreground mb-2">{method.description}</p>
-                                                <p className="text-primary font-medium">{method.contact}</p>
-                                            </CardContent>
-                                        </Card>
-                                    </a>
-                                ))}
                             </div>
                         </div>
                     </section>
