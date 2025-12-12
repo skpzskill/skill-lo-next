@@ -4,9 +4,9 @@ import { Providers } from "@/components/providers";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.skillpreneurz.com"),
-  title: "SkillPreneurZ | Building the Future Mindset",
-  description: "SkillPreneurZ brings startup thinking, innovation, and entrepreneurial learning to the next generation. Build future-ready skills and mindsets.",
-  keywords: "SkillPreneurZ, entrepreneurship education, kids business skills, design thinking, financial literacy, AI skills, startup education, young entrepreneurs",
+  title: "SkillPreneurZ | Next Gen Skill Builders for Young Minds",
+  description: "SkillPreneurZ brings startup thinking, innovation, and entrepreneurial learning to the next generation globally. Build future-ready skills and mindsets through world-class education.",
+  keywords: "entrepreneurship, skill building, startup education, SkillPreneurZ, entrepreneurship education, kids business skills, design thinking, financial literacy, AI skills, young entrepreneurs, innovation education",
   authors: [{ name: "SkillPreneurZ" }],
   robots: "index, follow",
   icons: {

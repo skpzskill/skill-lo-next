@@ -6,16 +6,15 @@ export const OrganizationSchema = () => {
     "@context": "https://schema.org",
     "@type": "EducationalOrganization",
     "name": "SkillPreneurZ",
-    "alternateName": "SkillPreneurZ India",
-    "description": "SkillPreneurZ is India's leading educational platform dedicated to building the future mindset in children and young adults through entrepreneurship, design thinking, financial literacy, and AI skills training.",
+    "alternateName": "SkillPreneurZ Global",
+    "description": "SkillPreneurZ is a leading global educational platform dedicated to building the future mindset in children and young adults through entrepreneurship, skill building, startup education, design thinking, financial literacy, and innovation training.",
     "url": BASE_URL,
     "logo": `${BASE_URL}/favicon.png`,
     "image": `${BASE_URL}/og-image.png`,
     "foundingDate": "2023",
     "address": {
       "@type": "PostalAddress",
-      "addressCountry": "IN",
-      "addressRegion": "India"
+      "addressCountry": "IN"
     },
     "contactPoint": {
       "@type": "ContactPoint",

@@ -10,12 +10,15 @@ import Programs from "@/components/Programs";
 import CTA from "@/components/CTA";
 import Footer from "@/components/Footer";
 import JoinDialog from "@/components/JoinDialog";
+import { OrganizationSchema, WebSiteSchema } from "@/components/StructuredData";
 
 const HomeClient = () => {
     const [joinDialogOpen, setJoinDialogOpen] = useState(false);
 
     return (
         <div className="min-h-screen">
+            <OrganizationSchema />
+            <WebSiteSchema />
             <Navigation onJoinClick={() => setJoinDialogOpen(true)} />
             <main>
                 <Hero onJoinClick={() => setJoinDialogOpen(true)} />

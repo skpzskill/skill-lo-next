@@ -8,7 +8,7 @@ export const metadata: Metadata = {
     alternates: {
         canonical: "https://www.skillpreneurz.com/contact"
     },
-    keywords: "contact SkillPreneurZ, education inquiry India, school partnership, parent inquiry, future skills contact"
+    keywords: "contact SkillPreneurZ, education inquiry, school partnership, parent inquiry, startup education contact, skill building inquiry"
 };
 
 const Contact = () => {
