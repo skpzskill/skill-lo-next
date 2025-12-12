@@ -8,6 +8,7 @@ import Mission from "@/components/Mission";
 import Features from "@/components/Features";
 import Programs from "@/components/Programs";
 import CTA from "@/components/CTA";
+import Footer from "@/components/Footer";
 import JoinDialog from "@/components/JoinDialog";
 
 const HomeClient = () => {
@@ -24,11 +25,8 @@ const HomeClient = () => {
                 <Programs />
                 <CTA onJoinClick={() => setJoinDialogOpen(true)} />
             </main>
-            <footer className="py-8 bg-card border-t border-border">
-                <div className="container mx-auto px-4 text-center text-muted-foreground">
-                    <p>© 2025 SkillPreneurZ. Building the Future Mindset.</p>
-                </div>
-            </footer>
+
+            <Footer />
 
             <JoinDialog open={joinDialogOpen} onOpenChange={setJoinDialogOpen} />
         </div>
@@ -36,3 +34,4 @@ const HomeClient = () => {
 };
 
 export default HomeClient;
+

@@ -4,7 +4,6 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { Clock, Users, Award, CheckCircle, ArrowRight, Star } from 'lucide-react';
 import Navigation from '@/components/Navigation';
-import Footer from '@/components/Footer';
 import JoinDialog from '@/components/JoinDialog';
 import Breadcrumb from '@/components/Breadcrumb';
 import { Button } from '@/components/ui/button';
@@ -239,7 +238,6 @@ const CoursesClient = () => {
                     </section>
                 </main>
 
-                <Footer />
                 <JoinDialog open={joinDialogOpen} onOpenChange={setJoinDialogOpen} />
             </div>
         </>
@@ -247,3 +245,4 @@ const CoursesClient = () => {
 };
 
 export default CoursesClient;
+

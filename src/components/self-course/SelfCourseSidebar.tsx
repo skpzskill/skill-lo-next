@@ -39,8 +39,8 @@ const SelfCourseSidebar = ({ mode, onModeChange }: SelfCourseSidebarProps) => {
           <Button
             variant={mode === "child" ? "default" : "outline"}
             className={`w-full justify-start gap-3 h-12 ${mode === "child"
-                ? "bg-gradient-to-r from-orange-400 to-pink-500 text-white border-0 shadow-lg"
-                : "hover:bg-orange-50"
+              ? "bg-gradient-to-r from-orange-400 to-pink-500 text-white border-0 shadow-lg"
+              : "hover:bg-orange-50"
               }`}
             onClick={() => onModeChange("child")}
           >
@@ -54,8 +54,8 @@ const SelfCourseSidebar = ({ mode, onModeChange }: SelfCourseSidebarProps) => {
           <Button
             variant={mode === "parent" ? "default" : "outline"}
             className={`w-full justify-start gap-3 h-12 ${mode === "parent"
-                ? "bg-gradient-to-r from-blue-500 to-violet-600 text-white border-0 shadow-lg"
-                : "hover:bg-blue-50"
+              ? "bg-gradient-to-r from-blue-500 to-violet-600 text-white border-0 shadow-lg"
+              : "hover:bg-blue-50"
               }`}
             onClick={() => onModeChange("parent")}
           >
@@ -68,7 +68,13 @@ const SelfCourseSidebar = ({ mode, onModeChange }: SelfCourseSidebarProps) => {
         </div>
       </SidebarContent>
 
-      <SidebarFooter className="p-4 border-t border-sidebar-border/50">
+      <SidebarFooter className="p-4 border-t border-sidebar-border/50 space-y-2">
+        <Link href="/student">
+          <Button variant="default" className="w-full justify-start gap-2 bg-gradient-to-r from-violet-500 to-pink-500 text-white hover:from-violet-600 hover:to-pink-600">
+            <Home className="w-4 w-4" />
+            <span>Back to Dashboard</span>
+          </Button>
+        </Link>
         <Link href="/">
           <Button variant="ghost" className="w-full justify-start gap-2 text-muted-foreground hover:text-foreground">
             <Home className="w-4 h-4" />
@@ -81,3 +87,4 @@ const SelfCourseSidebar = ({ mode, onModeChange }: SelfCourseSidebarProps) => {
 };
 
 export default SelfCourseSidebar;
+
