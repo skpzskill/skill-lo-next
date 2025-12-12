@@ -45,7 +45,7 @@ const Footer = () => {
               <span className="text-xl font-bold">SkillPreneurZ</span>
             </div>
             <p className="text-background/70 leading-relaxed">
-              Building the Future Mindset through innovative entrepreneurship education, design thinking, and financial literacy programs for young minds across India.
+              Building the Future Mindset through innovative entrepreneurship education, design thinking, and financial literacy programs for young minds.
             </p>
             <div className="flex gap-4">
               <a

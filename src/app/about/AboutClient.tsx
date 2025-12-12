@@ -97,7 +97,7 @@ const AboutClient = () => {
                                     </p>
                                     <p>
                                         Today, SkillPreneurZ has grown into a movement. We've touched the lives of over 10,000
-                                        students across India, partnering with schools, parents, and communities who share our
+                                        students, partnering with schools, parents, and communities who share our
                                         belief that every child deserves the opportunity to develop their entrepreneurial potential.
                                     </p>
                                 </div>
