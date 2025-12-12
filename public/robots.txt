@@ -1,0 +1,10 @@
+# Robots.txt for skillpreneurz.com
+
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://www.skillpreneurz.com/sitemap.xml
+
+# Disallow admin/internal routes
+Disallow: /api/
