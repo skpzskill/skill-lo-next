@@ -11,23 +11,15 @@ export const metadata: Metadata = {
   robots: "index, follow",
   icons: {
     icon: [
-      { url: '/favicon.png?v=3', type: 'image/png' },
+      { url: '/favicon.png?v=4', type: 'image/png' },
     ],
-    apple: '/favicon.png?v=3',
+    apple: '/favicon.png?v=4',
   },
   openGraph: {
     type: "website",
     url: "https://www.skillpreneurz.com/",
     title: "SkillPreneurZ | Building the Future Mindset",
     description: "Shaping mindsets through startup thinking, innovation, and entrepreneurial learning for the next generation.",
-    images: [
-      {
-        url: "https://www.skillpreneurz.com/logo.png",
-        width: 1200,
-        height: 630,
-        alt: "SkillPreneurZ Logo",
-      },
-    ],
     siteName: "SkillPreneurZ",
   },
   twitter: {
@@ -35,7 +27,6 @@ export const metadata: Metadata = {
     site: "@SkillPreneurZ",
     title: "SkillPreneurZ | Building the Future Mindset",
     description: "Shaping mindsets through startup thinking, innovation, and entrepreneurial learning for the next generation.",
-    images: ["https://www.skillpreneurz.com/logo.png"],
   },
   verification: {
     google: "hjVbVrKL9y2mFTeDXRiAzwrSZazI3klfiMLvfR0I8K8",
