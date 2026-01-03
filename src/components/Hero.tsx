@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Sparkles, Rocket } from "lucide-react";
-import heroBackground from "@/assets/hero-background.jpg";
+import newHeroBackground from "@/assets/new-hero-bg.jpg";
 
 interface HeroProps {
   onJoinClick?: () => void;
@@ -10,10 +10,10 @@ const Hero = ({ onJoinClick }: HeroProps) => {
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Background Image with Overlay */}
-      <div 
+      <div
         className="absolute inset-0 z-0"
         style={{
-          backgroundImage: `url(${heroBackground})`,
+          backgroundImage: `url(${newHeroBackground.src})`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
         }}
