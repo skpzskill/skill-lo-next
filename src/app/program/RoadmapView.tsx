@@ -3,7 +3,7 @@
 import React from 'react';
 import { Book, Lightbulb, Target, Star, Trophy, Flag, CheckCircle, Sparkles, Zap, Brain, Rocket, MessageCircle, PenTool } from 'lucide-react';
 import { cn } from "@/lib/utils";
-import { motion } from "framer-motion";
+
 
 interface RoadmapViewProps {
   items: string[];
