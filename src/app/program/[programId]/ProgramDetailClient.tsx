@@ -32,8 +32,7 @@ const ProgramDetailClient = ({ programId }: ProgramDetailClientProps) => {
             {/* Hero Section */}
             <section className="pt-32 pb-16 bg-gradient-to-br from-primary/10 via-background to-accent/10">
                 <div className="container mx-auto px-4">
-                    <Link href="/courses">
-                        {/* Changed /#programs to /courses as likely destination */}
+                    <Link href="/program">
                         <Button variant="ghost" className="mb-6">
                             <ArrowLeft className="w-4 h-4 mr-2" />
                             Back to Programs
@@ -96,19 +95,17 @@ const ProgramDetailClient = ({ programId }: ProgramDetailClientProps) => {
                         </div>
 
                         {/* Program Info */}
-                        <div className="grid md:grid-cols-3 gap-6 mb-12">
-                            <div className="p-6 rounded-xl bg-card border border-border">
-                                <h3 className="font-semibold mb-2 text-foreground">Age Group</h3>
-                                <p className="text-muted-foreground">{program.ageGroup}</p>
-                            </div>
-                            <div className="p-6 rounded-xl bg-card border border-border">
-                                <h3 className="font-semibold mb-2 text-foreground">Duration</h3>
-                                <p className="text-muted-foreground">{program.duration}</p>
-                            </div>
-                            <div className="p-6 rounded-xl bg-card border border-border">
-                                <h3 className="font-semibold mb-2 text-foreground">Format</h3>
-                                <p className="text-muted-foreground">{program.format}</p>
-                            </div>
+                        <div className="p-6 rounded-xl bg-card border border-border">
+                            <h3 className="font-semibold mb-2 text-foreground">Age Group</h3>
+                            <p className="text-muted-foreground">Real Workshops</p>
+                        </div>
+                        <div className="p-6 rounded-xl bg-card border border-border">
+                            <h3 className="font-semibold mb-2 text-foreground">Duration</h3>
+                            <p className="text-muted-foreground">Fun Learnings</p>
+                        </div>
+                        <div className="p-6 rounded-xl bg-card border border-border">
+                            <h3 className="font-semibold mb-2 text-foreground">Format</h3>
+                            <p className="text-muted-foreground">{program.format}</p>
                         </div>
 
                         {/* Enrollment Options Section */}

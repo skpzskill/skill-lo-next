@@ -7,6 +7,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import InstallAppButton from "./InstallAppButton";
 
 
 interface NavigationProps {
@@ -27,15 +28,15 @@ const Navigation = ({ onJoinClick }: NavigationProps) => {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-6">
-            <a href="#about" className="text-foreground hover:text-primary transition-colors">
+            <Link href="/#about" className="text-foreground hover:text-primary transition-colors">
               About
-            </a>
-            <a href="#programs" className="text-foreground hover:text-primary transition-colors">
+            </Link>
+            <Link href="/program" className="text-foreground hover:text-primary transition-colors">
               Programs
-            </a>
-            <a href="#mission" className="text-foreground hover:text-primary transition-colors">
+            </Link>
+            <Link href="/#mission" className="text-foreground hover:text-primary transition-colors">
               Mission
-            </a>
+            </Link>
             <Link href="/self-course" className="text-foreground hover:text-primary transition-colors flex items-center gap-1">
               <Sparkles className="w-4 h-4 text-accent" />
               AI Skill Builder
@@ -78,13 +79,13 @@ const Navigation = ({ onJoinClick }: NavigationProps) => {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-48">
               <DropdownMenuItem asChild>
-                <a href="#about">About</a>
+                <Link href="/#about">About</Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
-                <a href="#programs">Programs</a>
+                <Link href="/program">Programs</Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
-                <a href="#mission">Mission</a>
+                <Link href="/#mission">Mission</Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
                 <Link href="/self-course" className="flex items-center gap-2">
@@ -104,6 +105,9 @@ const Navigation = ({ onJoinClick }: NavigationProps) => {
                   School/Parent Portal
                 </Link>
               </DropdownMenuItem>
+              <div className="p-2 border-t mt-2">
+                <InstallAppButton />
+              </div>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
