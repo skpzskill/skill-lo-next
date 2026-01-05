@@ -19,10 +19,16 @@ const THEMES = [
   { color: "text-purple-500", bg: "bg-purple-500", border: "border-purple-500", light: "bg-purple-50", label: "Mastery & Application" },
 ];
 
+interface Group {
+  id: number;
+  items: string[];
+  theme: typeof THEMES[0];
+}
+
 const RoadmapView = ({ items }: RoadmapViewProps) => {
   // 1. Chunk items into groups (Modules)
   const GROUP_SIZE = 3;
-  const groups = [];
+  const groups: Group[] = [];
   for (let i = 0; i < items.length; i += GROUP_SIZE) {
     groups.push({
       id: i,
