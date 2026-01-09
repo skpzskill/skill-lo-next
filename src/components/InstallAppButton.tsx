@@ -39,7 +39,7 @@ const InstallAppButton = ({ mode = 'mobile' }: InstallAppButtonProps) => {
         setIsVisible(false);
     };
 
-    if (!isVisible) return null;
+    // if (!isVisible) return null; // Forced visible for testing
 
     if (mode === 'desktop') {
         return (
