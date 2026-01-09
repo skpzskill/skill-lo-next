@@ -65,6 +65,9 @@ const Navigation = ({ onJoinClick }: NavigationProps) => {
               </DropdownMenuContent>
             </DropdownMenu>
 
+            {/* Install App Button (Desktop) */}
+            <InstallAppButton mode="desktop" />
+
             <Button variant="heroPrimary" size="sm" onClick={onJoinClick}>
               Book a Free Trial
             </Button>

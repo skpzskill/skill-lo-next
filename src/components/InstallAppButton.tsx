@@ -9,15 +9,17 @@ interface BeforeInstallPromptEvent extends Event {
     userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
 }
 
-const InstallAppButton = () => {
+interface InstallAppButtonProps {
+    mode?: 'mobile' | 'desktop';
+}
+
+const InstallAppButton = ({ mode = 'mobile' }: InstallAppButtonProps) => {
     const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
     const [isVisible, setIsVisible] = useState(false);
 
     useEffect(() => {
         const handler = (e: Event) => {
-            // Prevent the mini-infobar from appearing on mobile
             e.preventDefault();
-            // Stash the event so it can be triggered later.
             setDeferredPrompt(e as BeforeInstallPromptEvent);
             setIsVisible(true);
         };
@@ -31,22 +33,27 @@ const InstallAppButton = () => {
 
     const handleInstallClick = async () => {
         if (!deferredPrompt) return;
-
-        // Show the install prompt
         deferredPrompt.prompt();
-
-        // Wait for the user to respond to the prompt
         const { outcome } = await deferredPrompt.userChoice;
-
-        // We've used the prompt, and can't use it again, drop it
         setDeferredPrompt(null);
         setIsVisible(false);
     };
 
     if (!isVisible) return null;
 
+    if (mode === 'desktop') {
+        return (
+            <button
+                onClick={handleInstallClick}
+                className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors font-medium text-sm"
+            >
+                DOWNLOAD OUR APP <Download className="w-5 h-5 bg-muted rounded p-0.5" />
+            </button>
+        );
+    }
+
     return (
-        <Button variant="outline" size="sm" onClick={handleInstallClick} className="gap-2">
+        <Button variant="outline" size="sm" onClick={handleInstallClick} className="gap-2 w-full justify-start">
             <Download className="w-4 h-4" />
             Install App
         </Button>
