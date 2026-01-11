@@ -10,7 +10,7 @@ const SelfCourseClient = () => {
     const [mode, setMode] = useState<"child" | "parent">("child");
 
     return (
-        <SidebarProvider>
+        <SidebarProvider style={{ "--sidebar-width": "14rem" } as React.CSSProperties}>
             <div className="min-h-screen flex w-full bg-gradient-to-br from-sky-50 via-violet-50 to-amber-50">
                 <SelfCourseSidebar mode={mode} onModeChange={setMode} />
                 <main className="flex-1 overflow-auto">
