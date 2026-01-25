@@ -30,7 +30,7 @@ import {
     Smile,
     ArrowUpRight
 } from "lucide-react";
-import { learningWorlds, LearningWorld, LearningZone, ZoneActivity, StudentProgress, calculateProgress } from "@/data/learning-worlds";
+import { learningWorlds, LearningWorld, PowerPath as LearningZone, PowerPathActivity as ZoneActivity, StudentProgress, calculateProgress } from "@/data/learning-worlds";
 import { cn } from "@/lib/utils";
 
 interface EntreSkillsSimulatorProps {
@@ -43,21 +43,29 @@ const EntreSkillsSimulator = ({ onBack }: EntreSkillsSimulatorProps) => {
     // State management
     const [progress, setProgress] = useState<StudentProgress>({
         worldsCompleted: [],
-        zonesCompleted: [],
+        powerPathsCompleted: [],
         badgesEarned: [],
         currentWorld: null,
-        currentZone: null,
+        currentPowerPath: null,
         journeyBookPages: {}
     });
 
     const [viewMode, setViewMode] = useState<ViewMode>('map');
     const [selectedWorld, setSelectedWorld] = useState<LearningWorld | null>(null);
-    const [selectedZone, setSelectedZone] = useState<LearningZone | null>(null);
+    const [selectedPowerPath, setSelectedPowerPath] = useState<LearningZone | null>(null);
     const [selectedActivity, setSelectedActivity] = useState<ZoneActivity | null>(null);
+
+    // Interactive Trading Cards State
+    const [activeCard, setActiveCard] = useState<string | null>(null);
+    const [activeTab, setActiveTab] = useState<string>('Story');
+    const [cardProgress, setCardProgress] = useState<Record<string, 'locked' | 'playable' | 'mastered'>>({});
+
     const [currentActivityIndex, setCurrentActivityIndex] = useState(0);
+    // Mind Map State
     const [mindMapProgress, setMindMapProgress] = useState<string[]>([]);
     const [selectedMindMapNode, setSelectedMindMapNode] = useState<any | null>(null);
     const mindMapDetailsRef = useRef<HTMLDivElement>(null);
+    const [isVideoPlaying, setIsVideoPlaying] = useState(false);
 
     // Calculate overall progress
     const overallProgress = calculateProgress(progress);
@@ -69,41 +77,45 @@ const EntreSkillsSimulator = ({ onBack }: EntreSkillsSimulatorProps) => {
         setProgress(prev => ({ ...prev, currentWorld: world.id }));
     };
 
-    // Handle zone selection
-    const handleZoneClick = (zone: LearningZone) => {
-        setSelectedZone(zone);
+    // Handle Power Path selection
+    const handlePowerPathClick = (path: LearningZone) => {
+        setSelectedPowerPath(path);
         setCurrentActivityIndex(0);
-        setSelectedActivity(zone.activities[0]);
+        setSelectedActivity(path.activities[0]);
+        setIsVideoPlaying(false);
         setViewMode('zone');
-        setProgress(prev => ({ ...prev, currentZone: zone.id }));
+        setProgress(prev => ({ ...prev, currentPowerPath: path.id }));
     };
 
     // Navigate activities
     const handleNextActivity = () => {
-        if (selectedZone && currentActivityIndex < selectedZone.activities.length - 1) {
+        if (selectedPowerPath && currentActivityIndex < selectedPowerPath.activities.length - 1) {
             const nextIndex = currentActivityIndex + 1;
             setCurrentActivityIndex(nextIndex);
-            setSelectedActivity(selectedZone.activities[nextIndex]);
+            setSelectedActivity(selectedPowerPath.activities[nextIndex]);
+            setIsVideoPlaying(false);
         }
     };
 
     const handlePrevActivity = () => {
-        if (selectedZone && currentActivityIndex > 0) {
+        if (selectedPowerPath && currentActivityIndex > 0) {
             const prevIndex = currentActivityIndex - 1;
             setCurrentActivityIndex(prevIndex);
-            setSelectedActivity(selectedZone.activities[prevIndex]);
+            setSelectedActivity(selectedPowerPath.activities[prevIndex]);
+            setIsVideoPlaying(false);
         }
     };
 
     // Handle zone completion
-    const handleZoneComplete = () => {
-        if (selectedZone) {
+    // Handle Power Path completion
+    const handlePowerPathComplete = () => {
+        if (selectedPowerPath) {
             setProgress(prev => ({
                 ...prev,
-                zonesCompleted: [...prev.zonesCompleted, selectedZone.id]
+                powerPathsCompleted: [...prev.powerPathsCompleted, selectedPowerPath.id]
             }));
             setViewMode('world');
-            setSelectedZone(null);
+            setSelectedPowerPath(null);
         }
     };
 
@@ -139,29 +151,63 @@ const EntreSkillsSimulator = ({ onBack }: EntreSkillsSimulatorProps) => {
                     )}
 
                     <div className="bg-gradient-to-br from-purple-100 to-pink-100 dark:from-purple-900/30 dark:to-pink-900/30 p-8 rounded-3xl border-4 border-dashed border-purple-300 dark:border-purple-700">
-                        <div className="flex flex-col items-center justify-center text-center space-y-6">
-                            <div className="relative">
-                                <div className="absolute inset-0 bg-purple-500 rounded-full blur-2xl opacity-20 animate-pulse"></div>
-                                <Play className="w-20 h-20 text-purple-500 relative z-10" />
-                            </div>
-                            <div>
-                                <h4 className="font-bold text-2xl text-purple-900 dark:text-purple-100 mb-2">
-                                    🎬 Watch & Learn!
-                                </h4>
-                                <p className="text-lg text-purple-700 dark:text-purple-300 mb-6 max-w-lg mx-auto">
-                                    {activity.description}
-                                </p>
-                                <div className="flex gap-3 justify-center">
-                                    <Button size="lg" className="bg-purple-500 hover:bg-purple-600">
-                                        <Play className="w-5 h-5 mr-2" />
-                                        Play Video
-                                    </Button>
-                                    <Button size="lg" variant="outline">
+                        {activity.videoUrl ? (
+                            <div className="space-y-6">
+                                <div className="aspect-video w-full rounded-2xl overflow-hidden shadow-2xl bg-black">
+                                    {activity.videoUrl.includes('youtube') || activity.videoUrl.includes('youtu.be') ? (
+                                        <iframe
+                                            width="100%"
+                                            height="100%"
+                                            src={(() => {
+                                                const url = activity.videoUrl;
+                                                if (url.includes('youtu.be/')) return url.replace('youtu.be/', 'www.youtube.com/embed/');
+                                                if (url.includes('watch?v=')) return url.replace('watch?v=', 'embed/');
+                                                return url;
+                                            })()}
+                                            title="YouTube video player"
+                                            frameBorder="0"
+                                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                            allowFullScreen
+                                        ></iframe>
+                                    ) : (
+                                        <video controls className="w-full h-full">
+                                            <source src={activity.videoUrl} type="video/mp4" />
+                                            Your browser does not support the video tag.
+                                        </video>
+                                    )}
+                                </div>
+                                <div className="text-center">
+                                    <h4 className="font-bold text-2xl text-purple-900 dark:text-purple-100 mb-2">
+                                        🎬 Watch & Learn!
+                                    </h4>
+                                    <p className="text-lg text-purple-700 dark:text-purple-300 mb-4 max-w-lg mx-auto">
+                                        {activity.description}
+                                    </p>
+                                    <Button size="lg" variant="outline" className="bg-white/50 border-purple-200 hover:bg-white/80">
                                         View Transcript
                                     </Button>
                                 </div>
                             </div>
-                        </div>
+                        ) : (
+                            <div className="flex flex-col items-center justify-center text-center space-y-6">
+                                <div className="relative">
+                                    <div className="absolute inset-0 bg-purple-500 rounded-full blur-2xl opacity-20 animate-pulse"></div>
+                                    <Play className="w-20 h-20 text-purple-500 relative z-10" />
+                                </div>
+                                <div>
+                                    <h4 className="font-bold text-2xl text-purple-900 dark:text-purple-100 mb-2">
+                                        🎬 Watch & Learn!
+                                    </h4>
+                                    <p className="text-lg text-purple-700 dark:text-purple-300 mb-6 max-w-lg mx-auto">
+                                        {activity.description}
+                                    </p>
+                                    <Button size="lg" className="bg-purple-500 hover:bg-purple-600">
+                                        <Play className="w-5 h-5 mr-2" />
+                                        Video Coming Soon
+                                    </Button>
+                                </div>
+                            </div>
+                        )}
                     </div>
 
                     {activity.content?.discussion && (
@@ -455,13 +501,28 @@ const EntreSkillsSimulator = ({ onBack }: EntreSkillsSimulatorProps) => {
 
                                 {/* Journey Book Logic */}
                                 {activity.content?.type === 'journey-book' && (
-                                    <div className="space-y-8">
-                                        <div className="bg-stone-50 dark:bg-stone-950 p-8 rounded-xl border-8 border-stone-200 dark:border-stone-800 shadow-2xl min-h-[600px] flex flex-col relative overflow-hidden">
-                                            {/* Journey Book Rendering Logic Here */}
-                                            <div className="text-center p-12">
-                                                <h2 className="text-4xl font-serif text-stone-800 dark:text-stone-200">My Adventure Book</h2>
-                                                <p className="text-stone-500 mt-4">Coming soon...</p>
+                                    <div className="space-y-8 py-8">
+                                        <div className="max-w-md mx-auto relative group">
+                                            {/* Radium Glow Aura */}
+                                            <div className="absolute -inset-4 bg-[#a3e635] rounded-[3rem] blur-3xl opacity-10 group-hover:opacity-25 transition-opacity animate-pulse"></div>
+
+                                            {/* The Book Container */}
+                                            <div className="relative bg-white rounded-[1.5rem] border-4 border-gray-200 shadow-2xl overflow-hidden animate-in slide-in-from-bottom duration-700 aspect-[3/4.2] transform hover:rotate-1 transition-transform">
+                                                <img
+                                                    src="/images/discovery-island/journey-book-cover.jpg"
+                                                    className="w-full h-full object-cover"
+                                                    alt="Journey Book Cover"
+                                                />
                                             </div>
+
+                                            {/* Book Shadow */}
+                                            <div className="w-[70%] h-6 bg-black/20 blur-xl rounded-full mx-auto mt-6"></div>
+                                        </div>
+
+                                        <div className="flex flex-col items-center gap-4">
+                                            <Button size="lg" className="bg-[#a3e635] hover:bg-[#8ecb2b] text-black font-black text-xl px-12 py-8 rounded-2xl shadow-[0_10px_0_#6a9d1d] active:translate-y-[2px] active:shadow-none transition-all uppercase">
+                                                Activate Journey Book!
+                                            </Button>
                                         </div>
                                     </div>
                                 )}
@@ -668,47 +729,200 @@ const EntreSkillsSimulator = ({ onBack }: EntreSkillsSimulatorProps) => {
                     return (
                         <div className="space-y-8 animate-in slide-in-from-bottom duration-500">
                             {activity.image && (
-                                <div className="rounded-3xl overflow-hidden shadow-xl border-4 border-white dark:border-gray-800">
+                                <div className="rounded-3xl overflow-hidden shadow-xl border-4 border-white dark:border-gray-800 relative group">
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent z-10" />
                                     <img
                                         src={activity.image}
                                         alt="Kid Entrepreneurs"
                                         className="w-full h-64 object-cover"
                                     />
+                                    <div className="absolute bottom-6 left-6 z-20 text-white">
+                                        <h3 className="text-3xl font-black mb-2">Entrepreneur Trading Cards</h3>
+                                        <p className="text-lg opacity-90">Collect them all by mastering skills!</p>
+                                    </div>
                                 </div>
                             )}
+
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                {activity.content.entrepreneurs.map((ent: any, idx: number) => (
-                                    <div key={idx} className="group perspective-1000">
-                                        <div className={cn(
-                                            "bg-gradient-to-br p-6 rounded-[2rem] border-4 border-white dark:border-gray-800 shadow-xl transition-all duration-500 transform group-hover:rotate-y-12 h-full flex flex-col",
-                                            ent.color || "from-blue-500 to-indigo-600"
-                                        )}>
-                                            <div className="text-center mb-4">
-                                                <div className="text-7xl mb-2 group-hover:scale-110 transition-transform">{ent.emoji}</div>
-                                                <h4 className="text-2xl font-black text-white">{ent.name}</h4>
-                                                <Badge className="bg-white/20 text-white border-0 mt-2">{ent.age}</Badge>
+                                {activity.content.entrepreneurs.map((ent: any) => {
+                                    const cardState = cardProgress[ent.id] || 'locked'; // 'locked', 'playable', 'mastered'
+                                    const isExpanded = activeCard === ent.id;
+
+                                    if (isExpanded) {
+                                        return (
+                                            <div key={ent.id} className="col-span-1 md:col-span-3 bg-white dark:bg-gray-800 rounded-[2.5rem] border-4 border-primary/20 shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300">
+                                                {/* Header */}
+                                                <div className={`bg-gradient-to-r ${ent.color} p-6 text-white flex justify-between items-center`}>
+                                                    <div className="flex items-center gap-4">
+                                                        <div className="text-5xl bg-white/20 rounded-2xl p-2 backdrop-blur-sm">{ent.emoji}</div>
+                                                        <div>
+                                                            <h3 className="text-3xl font-black">{ent.name}</h3>
+                                                            <p className="font-bold opacity-90">{ent.business}</p>
+                                                        </div>
+                                                    </div>
+                                                    <Button variant="ghost" className="text-white hover:bg-white/20" onClick={() => setActiveCard(null)}>
+                                                        Close Card
+                                                    </Button>
+                                                </div>
+
+                                                {/* Tabs */}
+                                                <div className="p-2 bg-gray-50 dark:bg-gray-900/50 flex gap-2 overflow-x-auto">
+                                                    {['Story', 'Skill Play', 'Power Unlock'].map((tab) => (
+                                                        <button
+                                                            key={tab}
+                                                            onClick={() => setActiveTab(tab)}
+                                                            className={cn(
+                                                                "flex-1 py-3 px-6 rounded-xl font-bold transition-all text-sm uppercase tracking-wide",
+                                                                activeTab === tab
+                                                                    ? "bg-white shadow-md text-primary"
+                                                                    : "hover:bg-gray-200 dark:hover:bg-gray-800 text-gray-500"
+                                                            )}
+                                                        >
+                                                            {tab}
+                                                        </button>
+                                                    ))}
+                                                </div>
+
+                                                {/* Content */}
+                                                <div className="p-8 min-h-[400px]">
+                                                    {activeTab === 'Story' && (
+                                                        <div className="space-y-6 animate-in fade-in slide-in-from-left-4 duration-300">
+                                                            <div className="grid gap-4">
+                                                                {ent.storyFrames.map((frame: string, idx: number) => (
+                                                                    <div key={idx} className="flex gap-4 items-start p-4 rounded-2xl bg-gray-50 dark:bg-gray-900 border border-gray-100">
+                                                                        <div className={`w-8 h-8 rounded-full bg-gradient-to-br ${ent.color} text-white flex items-center justify-center font-bold shrink-0`}>
+                                                                            {idx + 1}
+                                                                        </div>
+                                                                        <p className="text-lg font-medium">{frame}</p>
+                                                                    </div>
+                                                                ))}
+                                                            </div>
+                                                            <Button size="lg" className="w-full mt-4" onClick={() => setActiveTab('Skill Play')}>
+                                                                Start Challenge <ArrowRight className="w-4 h-4 ml-2" />
+                                                            </Button>
+                                                        </div>
+                                                    )}
+
+                                                    {activeTab === 'Skill Play' && (
+                                                        <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
+                                                            <div className="bg-indigo-50 dark:bg-indigo-950/30 p-6 rounded-3xl text-center">
+                                                                <h4 className="text-2xl font-bold text-indigo-900 dark:text-indigo-200 mb-2">
+                                                                    {ent.skill} Challenge! ⚡
+                                                                </h4>
+                                                                <p className="text-lg text-indigo-700 dark:text-indigo-300">
+                                                                    {ent.challenge.text}
+                                                                </p>
+                                                            </div>
+
+                                                            <div className="grid gap-3">
+                                                                {ent.challenge.options.map((opt: string, idx: number) => (
+                                                                    <button
+                                                                        key={idx}
+                                                                        onClick={() => {
+                                                                            if (idx === ent.challenge.correctIndex) {
+                                                                                // Success logic
+                                                                                setCardProgress(prev => ({ ...prev, [ent.id]: 'mastered' }));
+                                                                                setActiveTab('Power Unlock');
+                                                                            } else {
+                                                                                // Error feedback (could add toast)
+                                                                                alert("Try again! Think like an entrepreneur.");
+                                                                            }
+                                                                        }}
+                                                                        className="p-6 text-left rounded-2xl border-2 border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 transition-all font-bold text-lg"
+                                                                    >
+                                                                        {opt}
+                                                                    </button>
+                                                                ))}
+                                                            </div>
+                                                        </div>
+                                                    )}
+
+                                                    {activeTab === 'Power Unlock' && (
+                                                        <div className="text-center py-12 animate-in zoom-in duration-500">
+                                                            <div className="w-32 h-32 mx-auto bg-gradient-to-br from-yellow-400 to-amber-500 rounded-full flex items-center justify-center shadow-xl mb-6 animate-bounce">
+                                                                <Star className="w-16 h-16 text-white" />
+                                                            </div>
+                                                            <h3 className="text-4xl font-black mb-2 text-transparent bg-clip-text bg-gradient-to-r from-yellow-500 to-amber-600">
+                                                                POWER UNLOCKED!
+                                                            </h3>
+                                                            <p className="text-2xl font-bold text-gray-800 dark:text-white mb-8">
+                                                                {ent.powerReward}
+                                                            </p>
+                                                            <Button size="lg" className="px-12 py-6 text-xl rounded-full" onClick={() => setActiveCard(null)}>
+                                                                Collect & Continue
+                                                            </Button>
+                                                        </div>
+                                                    )}
+                                                </div>
                                             </div>
-                                            <div className="bg-white/10 backdrop-blur-md rounded-2xl p-4 text-white space-y-3 flex-1">
-                                                <div>
-                                                    <p className="text-xs uppercase font-bold opacity-60">Business</p>
-                                                    <p className="font-bold">{ent.business}</p>
+                                        );
+                                    }
+
+                                    return (
+                                        <div
+                                            key={ent.id}
+                                            onClick={() => {
+                                                setActiveCard(ent.id);
+                                                setActiveTab('Story');
+                                            }}
+                                            className="group perspective-1000 cursor-pointer h-full"
+                                        >
+                                            <div className={cn(
+                                                "bg-white dark:bg-gray-800 p-1 rounded-[2.5rem] border-4 border-gray-100 dark:border-gray-800 shadow-xl transition-all duration-300 hover:scale-105 hover:shadow-2xl h-full flex flex-col relative overflow-hidden",
+                                                cardState === 'mastered' ? "ring-4 ring-yellow-400 ring-offset-4 ring-offset-white dark:ring-offset-gray-950" : ""
+                                            )}>
+                                                {/* Front Design */}
+                                                <div className={`h-40 bg-gradient-to-br ${ent.color} rounded-[2rem] flex items-center justify-center relative overflow-hidden`}>
+                                                    <div className="text-8xl transform group-hover:scale-110 transition-transform duration-500">{ent.emoji}</div>
+                                                    {cardState === 'mastered' && (
+                                                        <div className="absolute top-4 right-4 bg-white/20 backdrop-blur-md p-2 rounded-full">
+                                                            <CheckCircle2 className="w-6 h-6 text-white" />
+                                                        </div>
+                                                    )}
                                                 </div>
-                                                <div>
-                                                    <p className="text-xs uppercase font-bold opacity-60">Success</p>
-                                                    <p className="text-sm">{ent.achievement}</p>
+
+                                                <div className="p-6 text-center space-y-2 flex-1 flex flex-col items-center">
+                                                    <h4 className="text-2xl font-black text-gray-900 dark:text-white">{ent.name}</h4>
+                                                    <Badge variant="secondary" className="mb-2">{ent.skill}</Badge>
+                                                    <div className="flex items-center gap-1 text-xs font-bold text-muted-foreground uppercase tracking-widest mt-auto">
+                                                        <span>Difficulty:</span>
+                                                        <span className={cn(
+                                                            ent.difficulty === 'Easy' ? "text-green-500" :
+                                                                ent.difficulty === 'Medium' ? "text-yellow-500" : "text-red-500"
+                                                        )}>{ent.difficulty}</span>
+                                                    </div>
                                                 </div>
-                                                <div className="pt-2 border-t border-white/20">
-                                                    <p className="text-xs uppercase font-bold opacity-60">Lesson</p>
-                                                    <p className="text-sm font-medium italic">"{ent.lesson}"</p>
+
+                                                <div className="p-4 pt-0">
+                                                    <div className={cn(
+                                                        "w-full py-3 rounded-xl font-bold flex items-center justify-center gap-2 transition-colors",
+                                                        cardState === 'mastered'
+                                                            ? "bg-green-100 text-green-700"
+                                                            : "bg-gray-100 text-gray-500 group-hover:bg-primary group-hover:text-white"
+                                                    )}>
+                                                        {cardState === 'mastered' ? (
+                                                            <>
+                                                                <Star className="w-4 h-4 fill-current" />
+                                                                Mastered
+                                                            </>
+                                                        ) : (
+                                                            <>
+                                                                Play Card
+                                                                <ArrowRight className="w-4 h-4" />
+                                                            </>
+                                                        )}
+                                                    </div>
                                                 </div>
                                             </div>
-                                            <Button className="mt-4 bg-white text-primary border-0 hover:bg-white/90">
-                                                Read Full Story
-                                            </Button>
                                         </div>
-                                    </div>
-                                ))}
+                                    );
+                                })}
                             </div>
+
+                            <Button size="lg" className="w-full mt-6 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-xl py-8 font-black">
+                                <Star className="w-6 h-6 mr-3" />
+                                SAVE MY COLLECTION!
+                            </Button>
                         </div>
                     );
                 }
@@ -857,7 +1071,7 @@ const EntreSkillsSimulator = ({ onBack }: EntreSkillsSimulatorProps) => {
                                                 </span>
                                                 <span className="flex items-center gap-1">
                                                     <Target className="w-4 h-4" />
-                                                    {world.zones.length} zones
+                                                    {world.powerPaths.length} Power Paths
                                                 </span>
                                             </div>
 
@@ -890,7 +1104,7 @@ const EntreSkillsSimulator = ({ onBack }: EntreSkillsSimulatorProps) => {
                                 <div className="text-7xl">{selectedWorld.emoji}</div>
                                 <div className="flex-1">
                                     <h2 className="text-3xl font-bold mb-2">{selectedWorld.name}</h2>
-                                    <p className="text-lg text-muted-foreground mb-3">{selectedWorld.whatKidsExperience}</p>
+                                    <p className="text-lg text-muted-foreground mb-3">{selectedWorld.description}</p>
                                     <div className="flex items-center gap-3">
                                         <Badge className="text-sm px-3 py-1">{selectedWorld.framework}</Badge>
                                         <Badge variant="outline" className="text-sm px-3 py-1">{selectedWorld.theme}</Badge>
@@ -910,19 +1124,19 @@ const EntreSkillsSimulator = ({ onBack }: EntreSkillsSimulatorProps) => {
 
                             <h3 className="text-2xl font-bold mb-6 flex items-center gap-3">
                                 <Sparkles className="w-6 h-6 text-primary" />
-                                Learning Zones
+                                Power Paths
                             </h3>
 
                             <div className="grid gap-4">
-                                {selectedWorld.zones.map((zone, idx) => {
-                                    const isZoneCompleted = progress.zonesCompleted.includes(zone.id);
+                                {selectedWorld.powerPaths.map((path, idx) => {
+                                    const isPathCompleted = progress.powerPathsCompleted.includes(path.id);
                                     return (
                                         <div
-                                            key={zone.id}
-                                            onClick={() => handleZoneClick(zone)}
+                                            key={path.id}
+                                            onClick={() => handlePowerPathClick(path)}
                                             className={cn(
                                                 "p-6 rounded-2xl border-3 cursor-pointer transition-all hover:scale-102 hover:shadow-xl",
-                                                isZoneCompleted
+                                                isPathCompleted
                                                     ? "bg-gradient-to-r from-green-100 to-emerald-100 dark:from-green-900/30 dark:to-emerald-900/30 border-green-500"
                                                     : "bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 border-gray-200 dark:border-gray-700 hover:border-primary"
                                             )}
@@ -930,24 +1144,24 @@ const EntreSkillsSimulator = ({ onBack }: EntreSkillsSimulatorProps) => {
                                             <div className="flex items-center gap-4">
                                                 <div className={cn(
                                                     "w-14 h-14 rounded-full flex items-center justify-center text-xl font-bold shrink-0",
-                                                    isZoneCompleted ? "bg-green-500 text-white" : "bg-primary/20 text-primary"
+                                                    isPathCompleted ? "bg-green-500 text-white" : "bg-primary/20 text-primary"
                                                 )}>
-                                                    {isZoneCompleted ? <CheckCircle2 className="w-7 h-7" /> : idx + 1}
+                                                    {isPathCompleted ? <CheckCircle2 className="w-7 h-7" /> : idx + 1}
                                                 </div>
                                                 <div className="flex-1">
                                                     <div className="flex items-center gap-3 mb-2">
-                                                        <span className="text-3xl">{zone.emoji}</span>
-                                                        <h4 className="font-bold text-xl">{zone.name}</h4>
+                                                        <span className="text-3xl">{path.emoji}</span>
+                                                        <h4 className="font-bold text-xl">{path.name}</h4>
                                                     </div>
-                                                    <p className="text-muted-foreground mb-2">{zone.description}</p>
+                                                    <p className="text-muted-foreground mb-2">{path.description}</p>
                                                     <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                                                        <span>{zone.duration} min</span>
+                                                        <span>{path.duration} min</span>
                                                         <span>•</span>
-                                                        <span>{zone.activities.length} activities</span>
+                                                        <span>{path.activities.length} activities</span>
                                                     </div>
                                                 </div>
-                                                <Button size="lg" className={isZoneCompleted ? "bg-green-500 hover:bg-green-600" : ""}>
-                                                    {isZoneCompleted ? 'Review' : 'Start'}
+                                                <Button size="lg" className={isPathCompleted ? "bg-green-500 hover:bg-green-600" : ""}>
+                                                    {isPathCompleted ? 'Review' : 'Start'}
                                                     <ArrowRight className="w-4 h-4 ml-2" />
                                                 </Button>
                                             </div>
@@ -969,8 +1183,8 @@ const EntreSkillsSimulator = ({ onBack }: EntreSkillsSimulatorProps) => {
                     </div>
                 )}
 
-                {/* Zone Activity View */}
-                {viewMode === 'zone' && selectedZone && selectedActivity && (
+                {/* Power Path Activity View */}
+                {viewMode === 'zone' && selectedPowerPath && selectedActivity && (
                     <div className="animate-in fade-in slide-in-from-right duration-500 max-w-5xl mx-auto">
                         <Button
                             variant="ghost"
@@ -986,16 +1200,16 @@ const EntreSkillsSimulator = ({ onBack }: EntreSkillsSimulatorProps) => {
                             {/* Zone Header */}
                             <div className="flex items-center justify-between mb-6 pb-4 border-b-2 border-border">
                                 <div className="flex items-center gap-4">
-                                    <span className="text-4xl">{selectedZone.emoji}</span>
+                                    <span className="text-4xl">{selectedPowerPath.emoji}</span>
                                     <div>
-                                        <h2 className="text-2xl font-bold leading-tight">{selectedZone.name}</h2>
-                                        <p className="text-sm text-muted-foreground">{selectedZone.description}</p>
+                                        <h2 className="text-2xl font-bold leading-tight">{selectedPowerPath.name}</h2>
+                                        <p className="text-sm text-muted-foreground">{selectedPowerPath.description}</p>
                                     </div>
                                 </div>
                                 <div className="text-right shrink-0">
                                     <div className="text-xs text-muted-foreground">Activity</div>
                                     <div className="text-xl font-bold text-primary">
-                                        {currentActivityIndex + 1} / {selectedZone.activities.length}
+                                        {currentActivityIndex + 1} / {selectedPowerPath.activities.length}
                                     </div>
                                 </div>
                             </div>
@@ -1019,10 +1233,10 @@ const EntreSkillsSimulator = ({ onBack }: EntreSkillsSimulatorProps) => {
                                     Previous
                                 </Button>
 
-                                {currentActivityIndex === selectedZone.activities.length - 1 ? (
+                                {currentActivityIndex === selectedPowerPath.activities.length - 1 ? (
                                     <Button
                                         size="sm"
-                                        onClick={handleZoneComplete}
+                                        onClick={handlePowerPathComplete}
                                         className="flex-1 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600"
                                     >
                                         <CheckCircle2 className="w-4 h-4 mr-2" />
